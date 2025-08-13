@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\SetCurrentTenant;
+use App\Http\Middleware\AttachTxHash;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         //
+    })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(SetCurrentTenant::class);
+    })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(AttachTxHash::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

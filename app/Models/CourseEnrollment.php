@@ -35,7 +35,7 @@ class CourseEnrollment extends Model
 
     public function user()
     {
-        return $this->belongsTo(LmsUser::class, 'user_id', 'uuid');
+        return $this->belongsTo(User::class, 'user_id', 'uuid');
     }
 
     public function course()

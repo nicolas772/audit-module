@@ -13,6 +13,6 @@ class Tenant extends Model
 
     public function users()
     {
-        return $this->hasMany(LmsUser::class);
+        return $this->hasMany(User::class);
     }
 }

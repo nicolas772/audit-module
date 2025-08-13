@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\BelongsToTenant;
+use App\Enums\AuditActionType;
 
-class LmsUserAudit extends Model
+class UserAudit extends Model
 {
     use BelongsToTenant;
 
@@ -16,6 +17,7 @@ class LmsUserAudit extends Model
     protected $casts = [
         'diffs' => 'array',
         'created_at' => 'datetime',
+        'type' => AuditActionType::class,
     ];
 
     protected $fillable = [

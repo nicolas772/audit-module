@@ -20,9 +20,6 @@ return new class extends Migration
             if (!Schema::hasColumn('users', 'tenant_id')) {
                 $table->uuid('tenant_id')->nullable()->after('uuid');
             }
-            if (!Schema::hasColumn('users', 'full_name')) {
-                $table->string('full_name')->after('email')->default('');
-            }
         });
 
         // Unico e índice para FK a otras tablas
@@ -51,9 +48,6 @@ return new class extends Migration
             if (Schema::hasColumn('users', 'uuid')) {
                 $table->dropUnique('users_uuid_unique');
                 $table->dropColumn('uuid');
-            }
-            if (Schema::hasColumn('users', 'full_name')) {
-                $table->dropColumn('full_name');
             }
         });
     }

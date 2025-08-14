@@ -7,15 +7,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Concerns\BelongsToTenant;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class User extends Authenticatable
+class User extends Authenticatable implements AuditableContract
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, BelongsToTenant;
+    use HasFactory, Notifiable, BelongsToTenant, SoftDeletes;
+    use \OwenIt\Auditing\Auditable;
 
+    /* Lo siguiente es para setear uuid como PK, pero daña Auth. De todas maneras, se sigue utilizando uuid para las relaciones
     protected $primaryKey = 'uuid';
     public $incrementing = false;
-    protected $keyType = 'string';
+    protected $keyType = 'string';*/
+
+    protected $table = 'users';
+
+    protected $auditInclude = [
+        'id',
+        'uuid',
+        'tenant_id',
+        'full_name',
+        'email',
+    ];
 
     /**
      * The attributes that are mass assignable.

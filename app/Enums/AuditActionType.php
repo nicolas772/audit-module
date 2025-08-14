@@ -20,10 +20,10 @@ enum AuditActionType: int
     public static function fromName(string $name): ?self
     {
         return match (strtolower($name)) {
-            'create' => self::Create,
-            'update' => self::Update,
-            'delete' => self::Delete,
-            default => null,
+            'created' => self::Create,
+            'updated' => self::Update,
+            'deleted' => self::Delete,
+            default => self::Update,
         };
     }
 }

@@ -28,6 +28,9 @@ return new class extends Migration
 
             $table->unique(['tenant_id','user_id','course_id']);
             $table->index(['tenant_id','created_at']);
+
+            $table->softDeletes();
+            $table->index('deleted_at');   
         });
     }
 

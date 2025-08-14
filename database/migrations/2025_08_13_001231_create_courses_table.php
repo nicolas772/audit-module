@@ -20,6 +20,9 @@ return new class extends Migration
 
             $table->foreign('tenant_id')->references('id')->on('tenants')->cascadeOnDelete();
             $table->index(['tenant_id','created_at']);
+
+            $table->softDeletes();
+            $table->index('deleted_at');   
         });
     }
 

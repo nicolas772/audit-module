@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_audit', function (Blueprint $table) {
+        Schema::create('courses_audit', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->uuid('tenant_id');
             $table->uuid('object_id'); // courses.id
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('course_audit');
+        Schema::dropIfExists('courses_audit');
     }
 };

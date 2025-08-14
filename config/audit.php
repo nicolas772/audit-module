@@ -59,8 +59,7 @@ return [
     'events' => [
         'created',
         'updated',
-        'deleted',
-        'restored',
+        'deleted'
     ],
 
     /*
@@ -84,7 +83,7 @@ return [
     |
     */
 
-    'exclude' => [],
+    'exclude' => ['updated_at'],
 
     /*
     |--------------------------------------------------------------------------
@@ -128,7 +127,7 @@ return [
     |
     */
 
-    'timestamps' => false,
+    'timestamps' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -151,7 +150,7 @@ return [
     |
     */
 
-    'driver' => 'database',
+    'driver' => App\Auditing\Drivers\PerTableDatabaseDriver::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -167,6 +166,7 @@ return [
             'table' => 'audits',
             'connection' => null,
         ],
+        'per_table' => App\Auditing\Drivers\PerTableDatabaseDriver::class,
     ],
 
     /*
@@ -194,5 +194,5 @@ return [
     |
     */
 
-    'console' => false,
+    'console' => true,
 ];

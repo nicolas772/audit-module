@@ -15,7 +15,7 @@ class AttachTxHash
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $request->attributes->set('tx_hash', (string) Str::ulid());
+        $request->attributes->set('tx_hash', 'devtest-'.Str::random(8));
         return $next($request);
     }
 }

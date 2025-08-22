@@ -8,27 +8,23 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
-use App\Models\UserAudit;
-use App\Models\CourseAudit;
-use App\Models\CourseEnrollmentAudit;
-use App\Enums\AuditActionType;
+use Illuminate\Support\Facades\Auth;
 
 class AllInfoSeeder extends Seeder
 {
     public function run(): void
     {
-        $tenants = [
-            'Buk',
-            'Amazon',
-        ];
+        // Obtener todos los tenants existentes
+        $tenants = Tenant::all();
 
-        foreach ($tenants as $name) {
-            $tenant = Tenant::create([
-                'id' => Str::uuid(),
-                'name' => $name,
-            ]);
+        foreach ($tenants as $tenant) {
+            // Setear el current tenant en el contexto de aplicación
+            app()->instance('currentTenantId', $tenant->id);
+            // Obtener el primer usuario del tenant
+            $user = User::where('tenant_id', $tenant->id)->first();
 
-            // app()->instance('currentTenantId', $tenant->id);
+            // Loguear al usuario para que Auditing funcione correctamente
+            Auth::login($user);
 
             // Crear usuarios
             $users = User::factory()->count(2)->create([
@@ -52,7 +48,7 @@ class AllInfoSeeder extends Seeder
                     ]);
 
                     // Simular auditoría
-                    CourseEnrollmentAudit::create([
+                    /*CourseEnrollmentAudit::create([
                         'tenant_id' => $tenant->id,
                         'object_id' => $enrollment->id,
                         'type' => AuditActionType::Create,
@@ -63,11 +59,11 @@ class AllInfoSeeder extends Seeder
                         'blame_id' => $user->uuid,
                         'blame_user' => $user->full_name,
                         'created_at' => now(),
-                    ]);
+                    ]);*/
                 }
 
                 // Simular auditoría de usuario
-                UserAudit::create([
+                /*UserAudit::create([
                     'tenant_id' => $tenant->id,
                     'object_id' => $user->uuid,
                     'type' => AuditActionType::Update,
@@ -78,11 +74,11 @@ class AllInfoSeeder extends Seeder
                     'blame_id' => $user->uuid,
                     'blame_user' => $user->full_name,
                     'created_at' => now(),
-                ]);
+                ]);*/
             }
 
             // Simular auditoría de curso
-            foreach ($courses as $course) {
+            /*foreach ($courses as $course) {
                 CourseAudit::create([
                     'tenant_id' => $tenant->id,
                     'object_id' => $course->id,
@@ -95,7 +91,7 @@ class AllInfoSeeder extends Seeder
                     'blame_user' => $users[0]->full_name,
                     'created_at' => now(),
                 ]);
-            }
+            }*/
         }
     }
 }

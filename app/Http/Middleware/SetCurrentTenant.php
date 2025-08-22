@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class SetCurrentTenant
 {
@@ -30,18 +31,22 @@ class SetCurrentTenant
         ]);
 
         if ($tenantId) {
+            if (!Str::isUuid($tenantId)) {
+                return response()->json(['message' => 'El tenant ID no es un UUID válido'], 400);
+            }
+
             $tenantExists = Tenant::where('id', $tenantId)->exists();
 
             if (!$tenantExists) {
                 Log::warning('[SetCurrentTenant] ID inválido recibido', ['tenantId' => $tenantId]);
-                return response()->json(['message' => 'Invalid tenant'], 403);
+                return response()->json(['message' => 'Tenant Inválido'], 403);
             }
 
             app()->instance('currentTenantId', $tenantId);
             Log::info('[SetCurrentTenant] Tenant válido', ['tenantId' => $tenantId]);
         } else {
             Log::warning('[SetCurrentTenant] No tenantId en header ni ruta');
-            return response()->json(['message' => 'Tenant not specified'], 400);
+            return response()->json(['message' => 'Tenant no especificado'], 400);
         }
 
         return $next($request);

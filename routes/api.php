@@ -12,6 +12,6 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/tenants', [TenantController::class, 'index']);
 
-Route::middleware(SetCurrentTenant::class)->group(function () {
-    Route::get('/tenants/{tenant}/audit-tables', [AuditTableController::class, 'index']);
+Route::middleware([SetCurrentTenant::class])->group(function () {
+    Route::get('/audit-tables', [AuditTableController::class, 'index']);
 });

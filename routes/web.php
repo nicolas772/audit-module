@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Middleware\SetCurrentTenant;
 
 /*Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -28,10 +29,10 @@ Route::get('/tenants', function () {
     return Inertia::render('Audit/TenantList');
 });
 
-Route::get('/tenants/{tenant}/audit-tables', function ($tenantId) {
-    return Inertia::render('Audit/AuditTableList', [
-        'tenantId' => $tenantId
-    ]);
+Route::middleware([SetCurrentTenant::class])->group(function () {
+    Route::get('/tenants/{tenant}/audit-tables', function ($tenant) {
+        return Inertia::render('Audit/AuditTableList');
+    });
 });
 
 Route::middleware('auth')->group(function () {

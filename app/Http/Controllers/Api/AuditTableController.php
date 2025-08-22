@@ -11,19 +11,17 @@ class AuditTableController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, $tenant)
+    public function index(Request $request)
     {
-        // Puedes hacer una comprobación si deseas validar tenant o permiso
+        $tenantId  = TenantResolver::resolve();
 
         // Lista de tablas _audit disponibles
         $tables = [
             'users_audit' => 'Usuarios',
             'courses_audit' => 'Cursos',
             'course_enrollments_audit' => 'Inscripciones',
+            'tenantId' => $tenantId
         ];
-
-        $tenantId  = TenantResolver::resolve();
-        \Log::info("Tenant ID: " . $tenantId);
 
         return response()->json($tables);
     }

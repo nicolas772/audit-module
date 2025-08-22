@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useTenantStore } from '@/stores/useTenantStore';
 
-export default function AuditTableList({ tenantId }) {
+export default function AuditTableList() {
+    const { tenantId } = useTenantStore();
     const [ tables, setTables ] = useState({});
 
     useEffect(() => {
-        axios.get(`/api/tenants/${tenantId}/audit-tables`, {
+        if (!tenantId) return;
+
+        axios.get('/api/audit-tables', {
             headers: {
                 'X-Tenant-Id': tenantId,
-            }
-        }).then(response => {
-            setTables(response.data);
-        });
+            },
+        }).then(response => setTables(response.data));
     }, [ tenantId ]);
 
     return (
@@ -20,7 +22,7 @@ export default function AuditTableList({ tenantId }) {
             <ul className="list-disc ml-6">
                 { Object.entries(tables).map(([ key, label ]) => (
                     <li key={ key }>
-                        <a href={ `/audit/${tenantId}/${key}` } className="text-blue-600 hover:underline">
+                        <a href='#' className="text-blue-600 hover:underline">
                             { label }
                         </a>
                     </li>

@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { router } from '@inertiajs/react';
+import { useTenantStore } from '@/stores/useTenantStore';
 
 function goToAudits(tenantId) {
-    router.visit(`/tenants/${tenantId}/audit-tables`);
+    const { setTenantId } = useTenantStore.getState();
+    setTenantId(tenantId);
+
+    router.get(`/tenants/${tenantId}/audit-tables`, {}, {
+        headers: {
+        'X-Tenant-Id': tenantId,
+        },
+    });
 }
 
 export default function TenantList() {

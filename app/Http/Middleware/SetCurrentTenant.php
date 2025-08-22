@@ -16,7 +16,7 @@ class SetCurrentTenant
     public function handle(Request $request, Closure $next): Response
     {
         // Obtén el tenant desde la ruta /tenants/{tenant} o header X-Tenant-Id
-        $tenantId = $request->route('tenant') ?? $request->header('X-Tenant-Id');
+        $tenantId = $request->header('X-Tenant-Id') ?? $request->route('tenant');
         app()->instance('currentTenantId', $tenantId);
 
         return $next($request);

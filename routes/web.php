@@ -28,8 +28,8 @@ Route::get('/tenants', function () {
     return Inertia::render('Audit/TenantList');
 });
 
-Route::get('/tenants/{tenant}/audits', function ($tenantId) {
-    return Inertia::render('Audit/TenantAuditList', [
+Route::get('/tenants/{tenant}/audit-tables', function ($tenantId) {
+    return Inertia::render('Audit/AuditTableList', [
         'tenantId' => $tenantId
     ]);
 });

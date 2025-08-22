@@ -3,7 +3,7 @@ import axios from 'axios';
 import { router } from '@inertiajs/react';
 
 function goToAudits(tenantId) {
-    router.visit(`/tenants/${tenantId}/audits`);
+    router.visit(`/tenants/${tenantId}/audit-tables`);
 }
 
 export default function TenantList() {
@@ -29,12 +29,12 @@ export default function TenantList() {
     if (error) return <p>{ error }</p>;
 
     return (
-        <div>
+        <div className='p-12'>
             <h1>Lista de Tenants</h1>
             <ul>
                 { tenants.map((tenant) => (
                     <li key={ tenant.id }>
-                        <button onClick={ () => goToAudits(tenant.id) }>
+                        <button onClick={ () => goToAudits(tenant.id) } className="text-blue-600 hover:underline">
                             { tenant.name }
                         </button>
                     </li>

@@ -28,6 +28,12 @@ Route::get('/tenants', function () {
     return Inertia::render('Audit/TenantList');
 });
 
+Route::get('/tenants/{tenant}/audits', function ($tenantId) {
+    return Inertia::render('Audit/TenantAuditList', [
+        'tenantId' => $tenantId
+    ]);
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { router } from '@inertiajs/react';
+
+function goToAudits(tenantId) {
+    router.visit(`/tenants/${tenantId}/audits`);
+}
 
 export default function TenantList() {
     const [ tenants, setTenants ] = useState([]);
@@ -27,8 +32,12 @@ export default function TenantList() {
         <div>
             <h1>Lista de Tenants</h1>
             <ul>
-                { tenants.map(tenant => (
-                    <li key={ tenant.id }>{ tenant.name }</li>
+                { tenants.map((tenant) => (
+                    <li key={ tenant.id }>
+                        <button onClick={ () => goToAudits(tenant.id) }>
+                            { tenant.name }
+                        </button>
+                    </li>
                 )) }
             </ul>
         </div>

@@ -5,6 +5,7 @@ import { useTenantStore } from '@/stores/useTenantStore';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
+// Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
     const values = diffObj || {};
     const isEmpty = Object.keys(values).length === 0;

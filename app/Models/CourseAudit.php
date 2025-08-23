@@ -10,7 +10,7 @@ class CourseAudit extends Model
 {
     use BelongsToTenant;
 
-    protected $table = 'course_audit';
+    protected $table = 'courses_audit';
 
     public $timestamps = false;
 

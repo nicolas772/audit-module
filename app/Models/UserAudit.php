@@ -10,7 +10,7 @@ class UserAudit extends Model
 {
     use BelongsToTenant;
 
-    protected $table = 'user_audit';
+    protected $table = 'users_audit';
 
     public $timestamps = false;
 

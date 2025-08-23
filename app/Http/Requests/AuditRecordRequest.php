@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Models\Audit\AuditTableMap;
 
 class AuditRecordRequest extends FormRequest
 {
@@ -23,7 +25,10 @@ class AuditRecordRequest extends FormRequest
     {
         return [
             'tables' => ['required', 'array'],
-            'tables.*' => ['string', 'in:users_audit,courses_audit,course_enrollments_audit'], // pendiente, validar con AuditTableMap
+            'tables.*' => [
+                'string',
+                Rule::in(AuditTableMap::all()),
+            ],
             'type' => 'nullable|in:created,updated,deleted',
             'object_id' => 'nullable|uuid',
             'start_date' => 'nullable|date',

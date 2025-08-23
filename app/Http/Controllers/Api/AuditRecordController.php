@@ -15,44 +15,60 @@ class AuditRecordController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(AuditRecordRequest $request, string $table): JsonResponse
+    public function index(AuditRecordRequest $request): JsonResponse
     {
         try {
-            // Clase que almacena las tablas auditables y sus respectivos modelos
-            $modelClass = AuditTableMap::resolve($table);
+            // Las entidades seleccionadas llegarán desde front como table[] = *_audit
+            $tableNames = $request->input('tables', []);
 
-            if (! $modelClass || ! class_exists($modelClass)) {
-                return response()->json(['message' => 'Invalid audit table'], 400);
+            if (!is_array($tableNames) || empty($tableNames)) {
+                return response()->json(['message' => 'Debe especificar al menos una tabla de auditoría'], 400);
             }
 
-            // Se crea query a clase de auditoría(con global scope de tenant ya aplicado)
-            $query = $modelClass::query();
+            // Inicialización de estructura que almacena resultados
+            $results = [];
 
-            // Filtro por tipo (created, updated, deleted)
-            if ($request->filled('type')) {
-                $type = AuditActionType::fromName($request->type);
-                $query->where('type', $type);
+            foreach ($tableNames as $table) {
+                // Clase que almacena las tablas auditables y sus respectivos modelos
+                $modelClass = AuditTableMap::resolve($table);
+
+                if (! $modelClass || ! class_exists($modelClass)) {
+                    Log::warning("Tabla no válida: $table");
+                    continue;
+                }
+                
+                // Se crea query a clase de auditoría(con global scope de tenant ya aplicado)
+                $query = $modelClass::query();
+
+                // Filtro por tipo (created, updated, deleted)
+                if ($request->filled('type')) {
+                    $type = AuditActionType::fromName($request->type);
+                    $query->where('type', $type);
+                }
+                
+                // Filtro por ID de objeto
+                if ($request->filled('object_id')) {
+                    $query->where('object_id', $request->object_id);
+                }
+
+                // Filtros por fecha (start_date)
+                if ($request->filled('start_date')) {
+                    $query->whereDate('created_at', '>=', $request->start_date);
+                }
+
+                // Filtros por fecha (end_date)
+                if ($request->filled('end_date')) {
+                    $query->whereDate('created_at', '<=', $request->end_date);
+                }
+
+                $perPage = $request->input('per_page', 15);
+                $records = $query->orderByDesc('created_at')->paginate($perPage);
+
+                $results[$table] = $records;
             }
 
-            // Filtro por ID de objeto
-            if ($request->filled('object_id')) {
-                $query->where('object_id', $request->object_id);
-            }
+            return response()->json($results);
 
-            // Filtros por fecha (start_date)
-            if ($request->filled('start_date')) {
-                $query->whereDate('created_at', '>=', $request->start_date);
-            }
-            
-            // Filtros por fecha (end_date)
-            if ($request->filled('end_date')) {
-                $query->whereDate('created_at', '<=', $request->end_date);
-            }
-
-            $perPage = $request->input('per_page', 15);
-            $records = $query->orderByDesc('created_at')->paginate($perPage);
-
-            return response()->json($records);
 
         } catch (\Throwable $e) {
             Log::error('Error en AuditRecordController', [

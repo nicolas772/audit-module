@@ -22,6 +22,8 @@ class AuditRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'tables' => ['required', 'array'],
+            'tables.*' => ['string', 'in:users_audit,courses_audit,course_enrollments_audit'], // pendiente, validar con AuditTableMap
             'type' => 'nullable|in:created,updated,deleted',
             'object_id' => 'nullable|uuid',
             'start_date' => 'nullable|date',

@@ -17,11 +17,11 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
-        const value = {
+        /*const value = {
             appendTo: 'self'
-        };
+        };*/
         root.render(
-            <PrimeReactProvider value={value}>
+            <PrimeReactProvider /*value={value}*/>
                 <App {...props} />
             </PrimeReactProvider>
         );

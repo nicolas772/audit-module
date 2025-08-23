@@ -31,32 +31,13 @@ class AuditRecordService
                 continue;
             }
 
-            // Se crea query a clase de auditoría(con global scope de tenant ya aplicado)
-            $query = $modelClass::query();
-
-            // Filtro por tipo (created, updated, deleted)
-            if ($request->filled('type')) {
-                $type = AuditActionType::fromName($request->type);
-                $query->where('type', $type);
-            }
-
-            // Filtro por ID de objeto
-            if ($request->filled('object_id')) {
-                $query->where('object_id', $request->object_id);
-            }
-
-            // Filtros por fecha (start_date)
-            if ($request->filled('start_date')) {
-                $query->whereDate('created_at', '>=', $request->start_date);
-            }
-
-            // Filtros por fecha (end_date)
-            if ($request->filled('end_date')) {
-                $query->whereDate('created_at', '<=', $request->end_date);
-            }
-
-            // Obtenemos todos los resultados
-            $records = $query->get();
+            // Obtención de datos a través de Eloquent, con filtros incluidos por scope
+            $records = $modelClass::query()
+                ->when($request->filled('type'), fn($q) => $q->type($request->type))
+                ->when($request->filled('object_id'), fn($q) => $q->objectId($request->object_id))#
+                ->when($request->filled('start_date'), fn($q) => $q->fromDate($request->start_date))
+                ->when($request->filled('end_date'), fn($q) => $q->toDate($request->end_date))
+                ->get();
 
             // Agregamos campo audit_table para identificar la tabla de origen por registros
             $records->transform(function ($item) use ($table) {

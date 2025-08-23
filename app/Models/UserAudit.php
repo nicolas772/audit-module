@@ -30,4 +30,25 @@ class UserAudit extends Model
         'blame_user',
         'created_at',
     ];
+
+    public function scopeType($query, string $type): void
+    {
+        $enum = AuditActionType::fromName($type);
+        $query->where('type', $enum);
+    }
+
+    public function scopeObjectId($query, string $objectId): void
+    {
+        $query->where('object_id', $objectId);
+    }
+
+    public function scopeFromDate($query, string $startDate): void
+    {
+        $query->whereDate('created_at', '>=', $startDate);
+    }
+
+    public function scopeToDate($query, string $endDate): void
+    {
+        $query->whereDate('created_at', '<=', $endDate);
+    }
 }

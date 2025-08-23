@@ -9,6 +9,7 @@ use App\Http\Requests\AuditRecordRequest;
 use App\Models\Audit\AuditTableMap;
 use Illuminate\Support\Facades\Log;
 use App\Enums\AuditActionType;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AuditRecordController extends Controller
 {
@@ -26,7 +27,7 @@ class AuditRecordController extends Controller
             }
 
             // Inicialización de estructura que almacena resultados
-            $results = [];
+            $allRecords = collect();
 
             foreach ($tableNames as $table) {
                 // Clase que almacena las tablas auditables y sus respectivos modelos
@@ -61,15 +62,33 @@ class AuditRecordController extends Controller
                     $query->whereDate('created_at', '<=', $request->end_date);
                 }
 
-                $perPage = $request->input('per_page', 15);
-                $records = $query->orderByDesc('created_at')->paginate($perPage);
+                // Obtenemos todos los resultados
+                $records = $query->get();
 
-                $results[$table] = $records;
+                // Agregamos campo audit_table para identificar la tabla de origen por registros
+                $records->transform(function ($item) use ($table) {
+                    $item->audit_table = $table;
+                    return $item;
+                });
+
+                $allRecords = $allRecords->concat($records);
             }
 
-            return response()->json($results);
+            // Ordenamos todos los registros por fecha de creación
+            $sorted = $allRecords->sortByDesc('created_at')->values();
 
+            // Paginación manual (nueva colección debido al requisito de tablas seleccionables)
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $perPage = $request->input('per_page', 15);
+            $pagedResults = new LengthAwarePaginator(
+                $sorted->forPage($page, $perPage),
+                $sorted->count(),
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
 
+            return response()->json($pagedResults);
         } catch (\Throwable $e) {
             Log::error('Error en AuditRecordController', [
                 'error' => $e->getMessage(),

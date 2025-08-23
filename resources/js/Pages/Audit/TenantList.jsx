@@ -7,7 +7,7 @@ function goToAudits(tenantId) {
     const { setTenantId } = useTenantStore.getState();
     setTenantId(tenantId);
 
-    router.get(`/tenants/${tenantId}/audit-tables`, {}, {
+    router.get(`/tenants/${tenantId}/audit-records`, {}, {
         headers: {
         'X-Tenant-Id': tenantId,
         },

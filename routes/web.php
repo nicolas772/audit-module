@@ -30,8 +30,8 @@ Route::get('/tenants', function () {
 });
 
 Route::middleware([SetCurrentTenant::class])->group(function () {
-    Route::get('/tenants/{tenant}/audit-tables', function ($tenant) {
-        return Inertia::render('Audit/AuditTableList');
+    Route::get('/tenants/{tenant}/audit-records', function ($tenant) {
+        return Inertia::render('Audit/AuditTable');
     });
 });
 

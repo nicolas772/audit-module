@@ -4,7 +4,6 @@ namespace App\Auditing\Drivers;
 
 use App\Enums\AuditActionType;
 use App\Auditing\Resolvers\TenantResolver;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Contracts\Audit;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -40,18 +39,13 @@ class PerTableDatabaseDriver implements AuditDriver
         // Mapeo a enum smallint
         $type = AuditActionType::fromName($event);
 
-        // Diffs: {"campo":[old,new]}. Solo guarda los campos que modificados
+        // Diferencias en campos
         $old = $data['old_values'] ?? [];
         $new = $data['new_values'] ?? [];
-        $keys = array_unique(array_merge(array_keys($old), array_keys($new)));
-        $diffs = [];
-        foreach ($keys as $k) {
-            $o = Arr::get($old, $k);
-            $n = Arr::get($new, $k);
-            if ($o !== $n) {
-                $diffs[$k] = [$o, $n];
-            }
-        }
+        $diffs = [
+            'old_values' => $old,
+            'new_values' => $new,
+        ];
 
         // Identificador del objeto por ID (todos tus modelos lo tienen, excepto users que utiliza uuid)
         $attribute = $modelTable == 'users' ? 'uuid' : 'id';

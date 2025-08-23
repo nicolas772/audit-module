@@ -5,6 +5,25 @@ import { useTenantStore } from '@/stores/useTenantStore';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
+function renderDiffValues(diffObj) {
+    const values = diffObj || {};
+    const isEmpty = Object.keys(values).length === 0;
+
+    if (isEmpty) {
+        return <span className="italic text-sm text-gray-400">Sin información</span>;
+    }
+
+    return (
+        <ul className="pl-4 list-disc">
+            {Object.entries(values).map(([key, value]) => (
+                <li key={key}>
+                    <strong>{key}:</strong> {String(value)}
+                </li>
+            ))}
+        </ul>
+    );
+}
+
 export default function AuditTable() {
     const { tenantId } = useTenantStore();
     // tables almacena las tablas de auditorias disponibles. Puede ser util para el filtro
@@ -31,7 +50,7 @@ export default function AuditTable() {
                 'X-Tenant-Id': tenantId,
             },
             params: {
-                tables: ['courses_audit'], // por ahora fijo
+                tables: ['users_audit', 'course_enrollments_audit'], // por ahora fijo
             },
         }).then((response) => {
             setRecords(response.data.data);
@@ -51,7 +70,15 @@ export default function AuditTable() {
                     <Column field="audit_table" header="entidad" />
                     <Column field="object_id" header="ID Objeto" />
                     <Column field="blame_user" header="Usuario" />
-                    {/*<Column field="diffs" header="Cambios" />*/}
+                    <Column
+                        header="Valores Antiguos"
+                        body={(rowData) => renderDiffValues(rowData.diffs?.old_values)}
+                    />
+
+                    <Column
+                        header="Valores Nuevos"
+                        body={(rowData) => renderDiffValues(rowData.diffs?.new_values)}
+                    />
                 </DataTable>
             </div>
         </div>

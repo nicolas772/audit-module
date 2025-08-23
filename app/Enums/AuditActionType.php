@@ -4,26 +4,35 @@ namespace App\Enums;
 
 enum AuditActionType: int
 {
-    case Create = 1;
-    case Update = 2;
-    case Delete = 3;
+    case Created = 1;
+    case Updated = 2;
+    case Deleted = 3;
 
     public function label(): string
     {
         return match ($this) {
-            self::Create => 'Create',
-            self::Update => 'Update',
-            self::Delete => 'Delete',
+            self::Created => 'Created',
+            self::Updated => 'Updated',
+            self::Deleted => 'Deleted',
         };
     }
 
     public static function fromName(string $name): ?self
     {
         return match (strtolower($name)) {
-            'created' => self::Create,
-            'updated' => self::Update,
-            'deleted' => self::Delete,
-            default => self::Update,
+            'created' => self::Created,
+            'updated' => self::Updated,
+            'deleted' => self::Deleted,
+            default => throw new \InvalidArgumentException("Invalid audit action type: $name"),
         };
+    }
+
+    public static function validNames(): array
+    {
+        $validActions = array_map(
+            fn(self $case) => strtolower($case->label()),
+            self::cases()
+        );
+        return $validActions;
     }
 }

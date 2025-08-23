@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Audit\AuditTableMap;
+use App\Enums\AuditActionType;
 
 class AuditRecordRequest extends FormRequest
 {
@@ -29,7 +30,9 @@ class AuditRecordRequest extends FormRequest
                 'string',
                 Rule::in(AuditTableMap::all()),
             ],
-            'type' => 'nullable|in:created,updated,deleted',
+            'type' => [
+                'nullable',
+                Rule::in(AuditActionType::validNames())],
             'object_id' => 'nullable|uuid',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',

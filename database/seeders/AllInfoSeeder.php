@@ -51,7 +51,7 @@ class AllInfoSeeder extends Seeder
                     /*CourseEnrollmentAudit::create([
                         'tenant_id' => $tenant->id,
                         'object_id' => $enrollment->id,
-                        'type' => AuditActionType::Create,
+                        'type' => AuditActionType::Created,
                         'diffs' => [
                             'isCompleted' => [null, $enrollment->isCompleted],
                         ],
@@ -66,7 +66,7 @@ class AllInfoSeeder extends Seeder
                 /*UserAudit::create([
                     'tenant_id' => $tenant->id,
                     'object_id' => $user->uuid,
-                    'type' => AuditActionType::Update,
+                    'type' => AuditActionType::Updated,
                     'diffs' => [
                         'full_name' => [$user->full_name, $user->full_name . ' Updated'],
                     ],
@@ -82,7 +82,7 @@ class AllInfoSeeder extends Seeder
                 CourseAudit::create([
                     'tenant_id' => $tenant->id,
                     'object_id' => $course->id,
-                    'type' => AuditActionType::Delete,
+                    'type' => AuditActionType::Deleted,
                     'diffs' => [
                         'title' => [null, $course->title],
                     ],

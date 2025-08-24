@@ -6,46 +6,36 @@ use App\Http\Requests\AuditRecordRequest;
 use App\Models\Audit\AuditTableMap;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class AuditRecordService
 {
     public function getAuditRecords(AuditRecordRequest $request): LengthAwarePaginator
     {
-        // Las entidades seleccionadas llegarán desde front como table[] = *_audit
+        // Variables de Request
         $tableNames = $request->input('tables', []);
+        $types      = $request->input('types', []);
+        $objectId   = $request->input('object_id');
+        $startDate  = $request->input('start_date');
+        $endDate    = $request->input('end_date'); 
+        
+        // Variables para paginación con LengthAwarePaginator
+        $perPage    = $request->input('per_page', 4);
+        $page       = LengthAwarePaginator::resolveCurrentPage();
 
+        // Validación para entidades a filtrar
         if (!is_array($tableNames) || empty($tableNames)) {
             throw new \InvalidArgumentException('Debe especificar al menos una tabla de auditoría');
         }
 
-        // Inicialización de estructura que almacena resultados
+        // Inicialización de estructura que almacena todos los registros consolidados
         $allRecords = collect();
 
         foreach ($tableNames as $table) {
-            // Clase que almacena las tablas auditables y sus respectivos modelos
-            $modelClass = AuditTableMap::resolve($table);
-
-            if (! $modelClass || ! class_exists($modelClass)) {
-                Log::warning("Tabla no válida: $table");
-                continue;
-            }
-
-            // Obtención de datos a través de Eloquent, con filtros incluidos por scope
-            $records = $modelClass::query()
-                ->when(
-                    $request->filled('types') && is_array($request->types),
-                    fn($q) => $q->type($request->types)
-                )
-                ->when($request->filled('object_id'), fn($q) => $q->objectId($request->object_id))#
-                ->when($request->filled('start_date'), fn($q) => $q->fromDate($request->start_date))
-                ->when($request->filled('end_date'), fn($q) => $q->toDate($request->end_date))
-                ->get();
+            $records = $this->getRecordsFromTable($table, $types, $objectId, $startDate, $endDate);
 
             // Agregamos campo audit_table para identificar la tabla de origen por registros
-            $records->transform(function ($item) use ($table) {
-                $item->audit_table = $table;
-                return $item;
-            });
+            $records->each(fn($record) => $record->audit_table = $table);
 
             $allRecords = $allRecords->concat($records);
         }
@@ -53,10 +43,7 @@ class AuditRecordService
         // Ordenamos todos los registros por fecha de creación
         $sorted = $allRecords->sortByDesc('created_at')->values();
 
-        // Paginación manual (nueva colección debido al requisito de tablas seleccionables)
-        $page = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = $request->input('per_page', 4);
-
+        // Se retorna resultado ordenado y paginado
         return new LengthAwarePaginator(
             $sorted->forPage($page, $perPage)->values(),
             $sorted->count(),
@@ -64,5 +51,33 @@ class AuditRecordService
             $page,
             ['path' => request()->url(), 'query' => request()->query()]
         );
+    }
+
+    /**
+     * Recupera los registros de auditoría de una tabla específica.
+     */
+    protected function getRecordsFromTable(
+        string $table,
+        ?array $types,
+        ?string $objectId,
+        ?string $startDate,
+        ?string $endDate
+    ): Collection {
+        // Clase que almacena las tablas auditables y sus respectivos modelos
+        $modelClass = AuditTableMap::resolve($table);
+
+        // Validación existencia de modelo
+        if (!$modelClass || !class_exists($modelClass)) {
+            Log::warning("Tabla no válida: $table");
+            return collect();
+        }
+
+        // Obtención y retorno de datos a través de Eloquent, con filtros incluidos por scope
+        return $modelClass::query()
+            ->when($types && is_array($types), fn($q) => $q->type($types))
+            ->when($objectId, fn($q) => $q->objectId($objectId))
+            ->when($startDate, fn($q) => $q->fromDate($startDate))
+            ->when($endDate, fn($q) => $q->toDate($endDate))
+            ->get();
     }
 }

@@ -5,6 +5,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import dayjs from 'dayjs';
 import { MultiSelect } from 'primereact/multiselect';
+import { Calendar } from 'primereact/calendar';
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
@@ -60,6 +61,9 @@ export default function AuditTable() {
     // Filtro de Tipo
     const [ selectedTypes, setSelectedTypes ] = useState([]);
 
+    // Filtro por fechas
+    const [ startDate, setStartDate ] = useState(null);
+    const [ endDate, setEndDate ] = useState(null);
 
     useEffect(() => {
         if (!tenantId || selectedTables.length == 0) {
@@ -73,13 +77,15 @@ export default function AuditTable() {
             params: {
                 tables: selectedTables,
                 types: selectedTypes,
+                start_date: startDate,
+                end_date: endDate,
             },
         }).then((response) => {
             setRecords(response.data.data);
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
         });
-    }, [ tenantId, selectedTables, selectedTypes ]);
+    }, [ tenantId, selectedTables, selectedTypes, startDate, endDate ]);
 
     return (
         <div className='p-12'>
@@ -107,6 +113,25 @@ export default function AuditTable() {
                     display="chip"
                     className="w-full md:w-30rem"
                 />
+            </div>
+            <div className="flex flex-col gap-4 mb-4">
+                <label className="font-semibold">Rango de fechas</label>
+                <div className="flex gap-4">
+                    <Calendar
+                        value={ startDate }
+                        onChange={ (e) => setStartDate(e.value) }
+                        placeholder="Desde"
+                        dateFormat="dd/mm/yy"
+                        showIcon
+                    />
+                    <Calendar
+                        value={ endDate }
+                        onChange={ (e) => setEndDate(e.value) }
+                        placeholder="Hasta"
+                        dateFormat="dd/mm/yy"
+                        showIcon
+                    />
+                </div>
             </div>
             <div className="card">
                 <DataTable

@@ -6,6 +6,9 @@ import { Column } from 'primereact/column';
 import dayjs from 'dayjs';
 import { MultiSelect } from 'primereact/multiselect';
 import { Calendar } from 'primereact/calendar';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
@@ -65,6 +68,11 @@ export default function AuditTable() {
     const [ startDate, setStartDate ] = useState(null);
     const [ endDate, setEndDate ] = useState(null);
 
+    // Busqueda de Object ID
+    const [ objectIdInput, setObjectIdInput ] = useState('');
+    const [ objectId, setObjectId ] = useState('');
+
+
     useEffect(() => {
         if (!tenantId || selectedTables.length == 0) {
             setRecords([]);
@@ -79,13 +87,14 @@ export default function AuditTable() {
                 types: selectedTypes,
                 start_date: startDate,
                 end_date: endDate,
+                object_id: objectId,
             },
         }).then((response) => {
             setRecords(response.data.data);
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
         });
-    }, [ tenantId, selectedTables, selectedTypes, startDate, endDate ]);
+    }, [ tenantId, selectedTables, selectedTypes, startDate, endDate, objectId ]);
 
     return (
         <div className='p-12'>
@@ -133,6 +142,33 @@ export default function AuditTable() {
                     />
                 </div>
             </div>
+            <div className="flex flex-col gap-2 mb-6">
+                <label className="font-semibold">Buscar por ID de Objeto</label>
+                <div className="flex gap-3 w-full md:w-30rem">
+                    <InputText
+                        value={ objectIdInput }
+                        onChange={ (e) => setObjectIdInput(e.target.value) }
+                        placeholder="Ej: 9c9cf83d-5228-4a6c-8b37-85a550041be6"
+                        className="flex-1"
+                    />
+                    <Button
+                        icon="pi pi-search"
+                        label="Buscar"
+                        onClick={ () => setObjectId(objectIdInput.trim()) }
+                    />
+                    <Button
+                        icon="pi pi-times"
+                        label="Limpiar"
+                        severity="secondary"
+                        outlined
+                        onClick={ () => {
+                            setObjectId('');
+                            setObjectIdInput('');
+                        } }
+                    />
+                </div>
+            </div>
+
             <div className="card">
                 <DataTable
                     value={ records }

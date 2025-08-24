@@ -16,7 +16,7 @@ class AttachTxHash
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $request->attributes->set('tx_hash', 'devtest-'.Str::random(8));
+        $request->attributes->set('tx_hash', 'http-'.Str::random(8));
         return $next($request);
     }
 }

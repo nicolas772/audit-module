@@ -38,16 +38,18 @@ export default function TenantList() {
 
     return (
         <div className='p-12'>
-            <h1>Lista de Tenants</h1>
-            <ul>
-                { tenants.map((tenant) => (
-                    <li key={ tenant.id }>
-                        <button onClick={ () => goToAudits(tenant.id) } className="text-blue-600 hover:underline">
-                            { tenant.name }
-                        </button>
-                    </li>
-                )) }
-            </ul>
+            <h1 className='text-2xl'>Lista de Tenants</h1>
+            <div className='py-4'>
+                <ul class="list-disc">
+                    { tenants.map((tenant) => (
+                        <li key={ tenant.id }>
+                            <button onClick={ () => goToAudits(tenant.id) } className="text-lg text-blue-600 hover:underline">
+                                { tenant.name }
+                            </button>
+                        </li>
+                    )) }
+                </ul>
+            </div>
         </div>
     );
 }

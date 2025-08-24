@@ -8,6 +8,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Calendar } from 'primereact/calendar';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import { Link } from '@inertiajs/react'
 
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
@@ -34,7 +35,7 @@ function renderDiffValues(diffObj) {
 function formatEntityAuditTable(table) {
     return table
         .replace('_audit', '')
-        .replace(/_/g, ' ') 
+        .replace(/_/g, ' ')
         .replace(/^./, str => str.toUpperCase());
 };
 
@@ -117,6 +118,10 @@ export default function AuditTable() {
 
     return (
         <div className='p-12'>
+            <Link href="/tenants" className="p-button p-component mb-4 inline-flex items-center gap-2">
+                <i className="pi pi-arrow-left" />
+                <span>Volver a tenants</span>
+            </Link>
             <h2 className="text-xl font-bold mb-4">Tabla de Auditoría para tenant ID: { tenantId }</h2>
             <div className="flex flex-col gap-4 mb-4">
                 <label className="font-semibold">Entidad</label>

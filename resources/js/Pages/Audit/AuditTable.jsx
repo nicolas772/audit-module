@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTenantStore } from '@/stores/useTenantStore';
-
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import dayjs from 'dayjs';
+import { MultiSelect } from 'primereact/multiselect';
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
@@ -43,9 +43,16 @@ export default function AuditTable() {
     // tables almacena las tablas de auditorias disponibles. Puede ser util para el filtro
     const [ tables, setTables ] = useState({});
     const [ records, setRecords ] = useState([]);
-    const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
 
-    useEffect(() => {
+    // Filtros de Entidad
+    const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
+    const auditTableOptions = tablesFilter.map((table) => ({
+        label: formatAuditTable(table), // 'User', 'Course', etc.
+        value: table                    // 'users_audit', etc.
+    }));
+    const [ selectedTables, setSelectedTables ] = useState([]); // inicia con 1 por defecto
+
+    /*useEffect(() => {
         if (!tenantId) return;
         axios.get('/api/audit-tables', {
             headers: {
@@ -56,27 +63,42 @@ export default function AuditTable() {
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
         });
-    }, [ tenantId ]);
+    }, [ tenantId ]);*/
 
     useEffect(() => {
-        if (!tenantId) return;
+        if (!tenantId || selectedTables.length == 0) {
+            setRecords([]);
+            return;
+        };
         axios.get('/api/audit-records', {
             headers: {
                 'X-Tenant-Id': tenantId,
             },
             params: {
-                tables: tablesFilter, // por ahora fijo
+                tables: selectedTables, // por ahora fijo
             },
         }).then((response) => {
             setRecords(response.data.data);
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
         });
-    }, [ tenantId ]);
+    }, [ tenantId, selectedTables ]);
 
     return (
         <div className='p-12'>
             <h2 className="text-xl font-bold mb-4">Tabla de Auditoría para tenant ID: { tenantId }</h2>
+            <div className="flex flex-col gap-4 mb-4">
+                <label className="font-semibold">Entidad</label>
+                <MultiSelect
+                    value={ selectedTables }
+                    options={ auditTableOptions }
+                    onChange={ (e) => setSelectedTables(e.value) }
+                    optionLabel="label"
+                    placeholder="Selecciona una o más entidades"
+                    display="chip"
+                    className="w-full md:w-30rem"
+                />
+            </div>
             <div className="card">
                 <DataTable value={ records } tableStyle={ { minWidth: '60rem' } }>
                     <Column field="id" header="ID" />
@@ -85,10 +107,10 @@ export default function AuditTable() {
                         header="Fecha"
                         body={ (rowData) => dayjs(rowData.created_at).format('DD/MM/YYYY HH:mm') }
                     />
-                    <Column 
-                        field="type" 
-                        header="Acción" 
-                        body={(rowData) => auditTypeMap[rowData.type] || 'Desconocido'}
+                    <Column
+                        field="type"
+                        header="Acción"
+                        body={ (rowData) => auditTypeMap[ rowData.type ] || 'Desconocido' }
                     />
                     <Column
                         field="audit_table"

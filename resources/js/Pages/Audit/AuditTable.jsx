@@ -17,21 +17,33 @@ function renderDiffValues(diffObj) {
 
     return (
         <ul className="pl-4 list-disc">
-            {Object.entries(values).map(([key, value]) => (
-                <li key={key}>
-                    <strong>{key}:</strong> {String(value)}
+            { Object.entries(values).map(([ key, value ]) => (
+                <li key={ key }>
+                    <strong>{ key }:</strong> { String(value) }
                 </li>
-            ))}
+            )) }
         </ul>
     );
 }
+
+// Funcion para formatear los datos de la columna Entidad
+function formatAuditTable(table) {
+    return table.replace('_audit', '').replace(/^./, str => str.toUpperCase());
+};
+
+// Estructura para Mapear la columna Type
+const auditTypeMap = {
+    1: 'Created',
+    2: 'Updated',
+    3: 'Deleted',
+};
 
 export default function AuditTable() {
     const { tenantId } = useTenantStore();
     // tables almacena las tablas de auditorias disponibles. Puede ser util para el filtro
     const [ tables, setTables ] = useState({});
     const [ records, setRecords ] = useState([]);
-    const tablesFilter = ['users_audit', 'courses_audit', 'course_enrollments_audit'];
+    const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
 
     useEffect(() => {
         if (!tenantId) return;
@@ -60,7 +72,7 @@ export default function AuditTable() {
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
         });
-    }, [tenantId]);
+    }, [ tenantId ]);
 
     return (
         <div className='p-12'>
@@ -68,22 +80,30 @@ export default function AuditTable() {
             <div className="card">
                 <DataTable value={ records } tableStyle={ { minWidth: '60rem' } }>
                     <Column field="id" header="ID" />
-                    <Column 
-                        field="created_at" 
+                    <Column
+                        field="created_at"
                         header="Fecha"
-                        body={(rowData) => dayjs(rowData.created_at).format('DD/MM/YYYY HH:mm')}
+                        body={ (rowData) => dayjs(rowData.created_at).format('DD/MM/YYYY HH:mm') }
                     />
-                    <Column field="type_label" header="Acción" />
-                    <Column field="audit_table" header="Entidad" />
+                    <Column 
+                        field="type" 
+                        header="Acción" 
+                        body={(rowData) => auditTypeMap[rowData.type] || 'Desconocido'}
+                    />
+                    <Column
+                        field="audit_table"
+                        header="Entidad"
+                        body={ (rowData) => formatAuditTable(rowData.audit_table) }
+                    />
                     <Column field="object_id" header="ID Objeto" />
                     <Column field="blame_user" header="Usuario" />
                     <Column
                         header="Valores Antiguos"
-                        body={(rowData) => renderDiffValues(rowData.diffs?.old_values)}
+                        body={ (rowData) => renderDiffValues(rowData.diffs?.old_values) }
                     />
                     <Column
                         header="Valores Nuevos"
-                        body={(rowData) => renderDiffValues(rowData.diffs?.new_values)}
+                        body={ (rowData) => renderDiffValues(rowData.diffs?.new_values) }
                     />
                 </DataTable>
             </div>

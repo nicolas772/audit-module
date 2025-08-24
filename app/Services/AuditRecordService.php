@@ -55,10 +55,10 @@ class AuditRecordService
 
         // Paginación manual (nueva colección debido al requisito de tablas seleccionables)
         $page = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = $request->input('per_page', 15);
+        $perPage = $request->input('per_page', 4);
 
         return new LengthAwarePaginator(
-            $sorted->forPage($page, $perPage),
+            $sorted->forPage($page, $perPage)->values(),
             $sorted->count(),
             $perPage,
             $page,

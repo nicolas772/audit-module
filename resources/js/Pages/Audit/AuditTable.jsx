@@ -72,12 +72,23 @@ export default function AuditTable() {
     const [ objectIdInput, setObjectIdInput ] = useState('');
     const [ objectId, setObjectId ] = useState('');
 
+    // Paginación
+    const [ totalRecords, setTotalRecords ] = useState(0);
+    const [ first, setFirst ] = useState(0);
+    const [ rows, setRows ] = useState(4); // valor por defecto
+    const [ loading, setLoading ] = useState(false);
+
 
     useEffect(() => {
         if (!tenantId || selectedTables.length == 0) {
             setRecords([]);
+            setTotalRecords(0);
             return;
         };
+
+        // paginación
+        const page = Math.floor(first / rows) + 1;
+
         axios.get('/api/audit-records', {
             headers: {
                 'X-Tenant-Id': tenantId,
@@ -88,13 +99,18 @@ export default function AuditTable() {
                 start_date: startDate,
                 end_date: endDate,
                 object_id: objectId,
+                page: page,
+                per_page: rows,
             },
         }).then((response) => {
             setRecords(response.data.data);
+            setTotalRecords(response.data.total);
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
+        }).finally(() => {
+            setLoading(false);
         });
-    }, [ tenantId, selectedTables, selectedTypes, startDate, endDate, objectId ]);
+    }, [ tenantId, selectedTables, selectedTypes, startDate, endDate, objectId, first, rows ]);
 
     return (
         <div className='p-12'>
@@ -172,6 +188,16 @@ export default function AuditTable() {
             <div className="card">
                 <DataTable
                     value={ records }
+                    lazy
+                    paginator
+                    first={ first }
+                    rows={ rows }
+                    totalRecords={ totalRecords }
+                    loading={ loading }
+                    onPage={ (e) => {
+                        setFirst(e.first);
+                        setRows(e.rows);
+                    } }
                     tableStyle={ { minWidth: '60rem' } }
                     showGridlines
                     emptyMessage="Sin información de auditorías"

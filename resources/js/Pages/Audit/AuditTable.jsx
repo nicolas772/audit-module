@@ -31,8 +31,11 @@ function renderDiffValues(diffObj) {
 }
 
 // Funcion para formatear los datos de la columna Entidad
-function formatAuditTable(table) {
-    return table.replace('_audit', '').replace(/^./, str => str.toUpperCase());
+function formatEntityAuditTable(table) {
+    return table
+        .replace('_audit', '')
+        .replace(/_/g, ' ') 
+        .replace(/^./, str => str.toUpperCase());
 };
 
 // Estructura para Mapear la columna Type
@@ -56,7 +59,7 @@ export default function AuditTable() {
     // Filtro de Entidad
     const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
     const auditTableOptions = tablesFilter.map((table) => ({
-        label: formatAuditTable(table),
+        label: formatEntityAuditTable(table),
         value: table,
     }));
     const [ selectedTables, setSelectedTables ] = useState([]);
@@ -216,7 +219,7 @@ export default function AuditTable() {
                     <Column
                         field="audit_table"
                         header="Entidad"
-                        body={ (rowData) => formatAuditTable(rowData.audit_table) }
+                        body={ (rowData) => formatEntityAuditTable(rowData.audit_table) }
                     />
                     <Column field="object_id" header="ID Objeto" />
                     <Column field="blame_user" header="Usuario" />

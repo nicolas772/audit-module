@@ -28,6 +28,16 @@ enum AuditActionType: int
         };
     }
 
+    public static function tryFromName(string $name): ?self
+    {
+        return match (strtolower($name)) {
+            'created' => self::Created,
+            'updated' => self::Updated,
+            'deleted' => self::Deleted,
+            default => null,
+        };
+    }
+
     public static function validNames(): array
     {
         $validActions = array_map(

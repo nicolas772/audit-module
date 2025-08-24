@@ -34,7 +34,7 @@ class CourseEnrollmentAudit extends Model
     public function scopeType($query, array $types): void
     {
         $enums = collect($types)
-            ->map(fn($type) => AuditActionType::fromName($type))
+            ->map(fn($type) => AuditActionType::tryFromName($type))
             ->filter()
             ->values();
 

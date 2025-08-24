@@ -3,13 +3,13 @@ import axios from 'axios';
 import { router } from '@inertiajs/react';
 import { useTenantStore } from '@/stores/useTenantStore';
 
-function goToAudits(tenantId) {
-    const { setTenantId } = useTenantStore.getState();
-    setTenantId(tenantId);
+function goToAudits(tenant) {
+    const { setTenant } = useTenantStore.getState();
+    setTenant(tenant);
 
-    router.get(`/tenants/${tenantId}/audit-records`, {}, {
+    router.get(`/tenants/${tenant.id}/audit-records`, {}, {
         headers: {
-        'X-Tenant-Id': tenantId,
+            'X-Tenant-Id': tenant.id,
         },
     });
 }
@@ -33,17 +33,17 @@ export default function TenantList() {
             });
     }, []);
 
-    if (loading) return <p>Cargando tenants...</p>;
+    if (loading) return <p>Cargando Clientes...</p>;
     if (error) return <p>{ error }</p>;
 
     return (
         <div className='p-12'>
-            <h1 className='text-2xl'>Lista de Tenants</h1>
+            <h1 className='text-2xl'>Lista de Clientes</h1>
             <div className='py-4'>
-                <ul class="list-disc">
+                <ul className="list-disc">
                     { tenants.map((tenant) => (
                         <li key={ tenant.id }>
-                            <button onClick={ () => goToAudits(tenant.id) } className="text-lg text-blue-600 hover:underline">
+                            <button onClick={ () => goToAudits(tenant) } className="text-lg text-blue-600 hover:underline">
                                 { tenant.name }
                             </button>
                         </li>

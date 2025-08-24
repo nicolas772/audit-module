@@ -8,8 +8,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Calendar } from 'primereact/calendar';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Link } from '@inertiajs/react'
-
+import { router } from '@inertiajs/react';
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
@@ -54,7 +53,7 @@ const auditTypeOptions = [
 ];
 
 export default function AuditTable() {
-    const { tenantId } = useTenantStore();
+    const { tenant, tenantId } = useTenantStore();
     const [ records, setRecords ] = useState([]);
 
     // Filtro de Entidad
@@ -118,11 +117,15 @@ export default function AuditTable() {
 
     return (
         <div className='p-12'>
-            <Link href="/tenants" className="p-button p-component mb-4 inline-flex items-center gap-2">
-                <i className="pi pi-arrow-left" />
-                <span>Volver a tenants</span>
-            </Link>
-            <h2 className="text-xl font-bold mb-4">Tabla de Auditoría para tenant ID: { tenantId }</h2>
+            <Button
+                icon="pi pi-arrow-left"
+                label="Volver al Clientes"
+                className="mb-4"
+                link
+                onClick={() => router.visit('/tenants')}
+            />
+            <h2 className="text-xl font-bold mb-2">Tabla de Auditoría para cliente: { tenant.name }</h2>
+            <h3 className="text-l font-bold mb-4">ID Cliente: { tenant.id }</h3>
             <div className="flex flex-col gap-4 mb-4">
                 <label className="font-semibold">Entidad</label>
                 <MultiSelect

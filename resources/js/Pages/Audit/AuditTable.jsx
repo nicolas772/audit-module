@@ -4,6 +4,7 @@ import { useTenantStore } from '@/stores/useTenantStore';
 
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import dayjs from 'dayjs';
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
@@ -30,6 +31,7 @@ export default function AuditTable() {
     // tables almacena las tablas de auditorias disponibles. Puede ser util para el filtro
     const [ tables, setTables ] = useState({});
     const [ records, setRecords ] = useState([]);
+    const tablesFilter = ['users_audit', 'courses_audit', 'course_enrollments_audit'];
 
     useEffect(() => {
         if (!tenantId) return;
@@ -51,7 +53,7 @@ export default function AuditTable() {
                 'X-Tenant-Id': tenantId,
             },
             params: {
-                tables: ['users_audit', 'course_enrollments_audit'], // por ahora fijo
+                tables: tablesFilter, // por ahora fijo
             },
         }).then((response) => {
             setRecords(response.data.data);
@@ -66,16 +68,19 @@ export default function AuditTable() {
             <div className="card">
                 <DataTable value={ records } tableStyle={ { minWidth: '60rem' } }>
                     <Column field="id" header="ID" />
-                    <Column field="created_at" header="Fecha" />
-                    <Column field="type" header="Acción" />
-                    <Column field="audit_table" header="entidad" />
+                    <Column 
+                        field="created_at" 
+                        header="Fecha"
+                        body={(rowData) => dayjs(rowData.created_at).format('DD/MM/YYYY HH:mm')}
+                    />
+                    <Column field="type_label" header="Acción" />
+                    <Column field="audit_table" header="Entidad" />
                     <Column field="object_id" header="ID Objeto" />
                     <Column field="blame_user" header="Usuario" />
                     <Column
                         header="Valores Antiguos"
                         body={(rowData) => renderDiffValues(rowData.diffs?.old_values)}
                     />
-
                     <Column
                         header="Valores Nuevos"
                         body={(rowData) => renderDiffValues(rowData.diffs?.new_values)}

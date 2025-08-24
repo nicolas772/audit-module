@@ -14,6 +14,7 @@ enum AuditActionType: int
             self::Created => 'Created',
             self::Updated => 'Updated',
             self::Deleted => 'Deleted',
+            default => throw new \InvalidArgumentException("Invalid audit action label: $this"),
         };
     }
 

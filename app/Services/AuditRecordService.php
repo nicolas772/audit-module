@@ -6,6 +6,7 @@ use App\Http\Requests\AuditRecordRequest;
 use App\Models\Audit\AuditTableMap;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Enums\AuditActionType;
 
 class AuditRecordService
 {
@@ -40,7 +41,12 @@ class AuditRecordService
 
             // Agregamos campo audit_table para identificar la tabla de origen por registros
             $records->transform(function ($item) use ($table) {
-                $item->audit_table = $table;
+                // creación del campo "type_label" usando funcion label de AuditActionType
+                if ($item->type instanceof AuditActionType) {
+                    $item->type_label = $item->type->label();
+                }
+                // Formateo del nombre de tabla (sin "_audit" y con primera letra mayúscula)
+                $item->audit_table = ucfirst(str_replace('_audit', '', $table));
                 return $item;
             });
 

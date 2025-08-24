@@ -13,14 +13,11 @@ class AuditTableController extends Controller
      */
     public function index(Request $request)
     {
-        $tenantId  = TenantResolver::resolve();
-
         // Lista de tablas _audit disponibles
         $tables = [
             'users_audit' => 'Usuarios',
             'courses_audit' => 'Cursos',
             'course_enrollments_audit' => 'Inscripciones',
-            'tenantId' => $tenantId
         ];
 
         return response()->json($tables);

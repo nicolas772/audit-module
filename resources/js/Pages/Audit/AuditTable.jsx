@@ -40,30 +40,15 @@ const auditTypeMap = {
 
 export default function AuditTable() {
     const { tenantId } = useTenantStore();
-    // tables almacena las tablas de auditorias disponibles. Puede ser util para el filtro
-    const [ tables, setTables ] = useState({});
     const [ records, setRecords ] = useState([]);
 
-    // Filtros de Entidad
+    // Filtro de Entidad
     const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
     const auditTableOptions = tablesFilter.map((table) => ({
         label: formatAuditTable(table), // 'User', 'Course', etc.
         value: table                    // 'users_audit', etc.
     }));
     const [ selectedTables, setSelectedTables ] = useState([]); // inicia con 1 por defecto
-
-    /*useEffect(() => {
-        if (!tenantId) return;
-        axios.get('/api/audit-tables', {
-            headers: {
-                'X-Tenant-Id': tenantId,
-            }
-        }).then((response) => {
-            setTables(response.data.data);
-        }).catch((error) => {
-            console.error('Error al obtener registros de auditoría:', error);
-        });
-    }, [ tenantId ]);*/
 
     useEffect(() => {
         if (!tenantId || selectedTables.length == 0) {
@@ -100,7 +85,14 @@ export default function AuditTable() {
                 />
             </div>
             <div className="card">
-                <DataTable value={ records } tableStyle={ { minWidth: '60rem' } }>
+                <DataTable 
+                value={ records } 
+                tableStyle={ { minWidth: '60rem' } } 
+                showGridlines 
+                emptyMessage="Sin información de auditorías"
+                resizableColumns
+                columnResizeMode='expand'
+                >
                     <Column field="id" header="ID" />
                     <Column
                         field="created_at"

@@ -38,6 +38,13 @@ const auditTypeMap = {
     3: 'Deleted',
 };
 
+// Estructura para el filtro de columna Type
+const auditTypeOptions = [
+    { label: 'Created', value: 'created' },
+    { label: 'Updated', value: 'updated' },
+    { label: 'Deleted', value: 'deleted' },
+];
+
 export default function AuditTable() {
     const { tenantId } = useTenantStore();
     const [ records, setRecords ] = useState([]);
@@ -45,10 +52,14 @@ export default function AuditTable() {
     // Filtro de Entidad
     const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
     const auditTableOptions = tablesFilter.map((table) => ({
-        label: formatAuditTable(table), // 'User', 'Course', etc.
-        value: table                    // 'users_audit', etc.
+        label: formatAuditTable(table),
+        value: table,
     }));
-    const [ selectedTables, setSelectedTables ] = useState([]); // inicia con 1 por defecto
+    const [ selectedTables, setSelectedTables ] = useState([]);
+
+    // Filtro de Tipo
+    const [ selectedTypes, setSelectedTypes ] = useState([]);
+
 
     useEffect(() => {
         if (!tenantId || selectedTables.length == 0) {
@@ -60,14 +71,15 @@ export default function AuditTable() {
                 'X-Tenant-Id': tenantId,
             },
             params: {
-                tables: selectedTables, // por ahora fijo
+                tables: selectedTables,
+                types: selectedTypes,
             },
         }).then((response) => {
             setRecords(response.data.data);
         }).catch((error) => {
             console.error('Error al obtener registros de auditoría:', error);
         });
-    }, [ tenantId, selectedTables ]);
+    }, [ tenantId, selectedTables, selectedTypes ]);
 
     return (
         <div className='p-12'>
@@ -84,14 +96,24 @@ export default function AuditTable() {
                     className="w-full md:w-30rem"
                 />
             </div>
+            <div className="flex flex-col gap-4 mb-4">
+                <label className="font-semibold">Tipo de acción</label>
+                <MultiSelect
+                    value={ selectedTypes }
+                    options={ auditTypeOptions }
+                    onChange={ (e) => setSelectedTypes(e.value) }
+                    optionLabel="label"
+                    placeholder="Selecciona uno o más tipos"
+                    display="chip"
+                    className="w-full md:w-30rem"
+                />
+            </div>
             <div className="card">
-                <DataTable 
-                value={ records } 
-                tableStyle={ { minWidth: '60rem' } } 
-                showGridlines 
-                emptyMessage="Sin información de auditorías"
-                resizableColumns
-                columnResizeMode='expand'
+                <DataTable
+                    value={ records }
+                    tableStyle={ { minWidth: '60rem' } }
+                    showGridlines
+                    emptyMessage="Sin información de auditorías"
                 >
                     <Column field="id" header="ID" />
                     <Column

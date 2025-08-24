@@ -32,7 +32,10 @@ class AuditRecordService
 
             // Obtención de datos a través de Eloquent, con filtros incluidos por scope
             $records = $modelClass::query()
-                ->when($request->filled('type'), fn($q) => $q->type($request->type))
+                ->when(
+                    $request->filled('types') && is_array($request->types),
+                    fn($q) => $q->type($request->types)
+                )
                 ->when($request->filled('object_id'), fn($q) => $q->objectId($request->object_id))#
                 ->when($request->filled('start_date'), fn($q) => $q->fromDate($request->start_date))
                 ->when($request->filled('end_date'), fn($q) => $q->toDate($request->end_date))

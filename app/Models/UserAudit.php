@@ -31,10 +31,14 @@ class UserAudit extends Model
         'created_at',
     ];
 
-    public function scopeType($query, string $type): void
+    public function scopeType($query, array $types): void
     {
-        $enum = AuditActionType::fromName($type);
-        $query->where('type', $enum);
+        $enums = collect($types)
+            ->map(fn($type) => AuditActionType::fromName($type))
+            ->filter()
+            ->values();
+
+        $query->whereIn('type', $enums);
     }
 
     public function scopeObjectId($query, string $objectId): void

@@ -30,9 +30,8 @@ class AuditRecordRequest extends FormRequest
                 'string',
                 Rule::in(AuditTableMap::all()),
             ],
-            'type' => [
-                'nullable',
-                Rule::in(AuditActionType::validNames())],
+            'types' => ['sometimes', 'array'],
+            'types.*' => Rule::in(AuditActionType::validNames()),
             'object_id' => 'nullable|uuid',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',

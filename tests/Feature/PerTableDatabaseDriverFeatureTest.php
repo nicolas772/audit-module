@@ -13,9 +13,6 @@ class PerTableDatabaseDriverFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -109,7 +106,7 @@ class PerTableDatabaseDriverFeatureTest extends TestCase
     }
 
     /**
-     * update action audit
+     * delete action audit
      */
     public function test_it_audits_user_deletion()
     {

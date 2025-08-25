@@ -22,7 +22,7 @@ class SetCurrentTenant
         $tenantIdHeader = $request->header('X-Tenant-Id');
         $tenantId = $tenantIdRoute ?? $tenantIdHeader;
         
-        \Log::info('[SetCurrentTenant] Incoming request', [
+        Log::info('[SetCurrentTenant] Incoming request', [
             'path' => $request->path(),
             //'method' => $request->method(),
             //'X-Tenant-Id' => $tenantIdHeader,

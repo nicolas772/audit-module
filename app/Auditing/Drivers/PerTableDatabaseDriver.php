@@ -45,19 +45,6 @@ class PerTableDatabaseDriver implements AuditDriver
         }
     }
 
-    /**
-     * Remove older audits that go over the threshold.
-     *
-     * @param \OwenIt\Auditing\Contracts\Auditable $model
-     *
-     * @return bool
-     */
-    public function prune(Auditable $model): bool
-    {
-        // TODO: Esta lógica debe implementar el borrado de auditorias antiguas dado un threshold
-        return true;
-    }
-
     protected function resolveAuditModel(Auditable $model): \Illuminate\Database\Eloquent\Model
     {
         // Tabla destino: <tabla_modelo>_audit
@@ -127,5 +114,18 @@ class PerTableDatabaseDriver implements AuditDriver
             'user_agent'     => request()->userAgent(),
             'tags'           => null,
         ]);
+    }
+
+    /**
+     * Remove older audits that go over the threshold.
+     *
+     * @param \OwenIt\Auditing\Contracts\Auditable $model
+     *
+     * @return bool
+     */
+    public function prune(Auditable $model): bool
+    {
+        // TODO: Esta lógica debe implementar el borrado de auditorias antiguas dado un threshold
+        return true;
     }
 }

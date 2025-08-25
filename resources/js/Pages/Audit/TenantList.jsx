@@ -37,7 +37,7 @@ export default function TenantList() {
     if (error) return <p>{ error }</p>;
 
     return (
-        <div className='p-12'>
+        <div className='flex flex-col items-center p-12'>
             <h1 className='text-2xl'>Lista de Clientes</h1>
             <div className='py-4'>
                 <ul className="list-disc">

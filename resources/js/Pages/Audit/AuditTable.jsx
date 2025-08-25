@@ -116,85 +116,125 @@ export default function AuditTable() {
     }, [ tenantId, selectedTables, selectedTypes, startDate, endDate, objectId, first, rows ]);
 
     return (
-        <div className='p-12'>
-            <Button
-                icon="pi pi-arrow-left"
-                label="Volver al Clientes"
-                className="mb-4"
-                link
-                onClick={() => router.visit('/tenants')}
-            />
-            <h2 className="text-xl font-bold mb-2">Tabla de Auditoría para cliente: { tenant.name }</h2>
-            <h3 className="text-l font-bold mb-4">ID Cliente: { tenant.id }</h3>
-            <div className="flex flex-col gap-4 mb-4">
-                <label className="font-semibold">Entidad</label>
-                <MultiSelect
-                    value={ selectedTables }
-                    options={ auditTableOptions }
-                    onChange={ (e) => setSelectedTables(e.value) }
-                    optionLabel="label"
-                    placeholder="Selecciona una o más entidades"
-                    display="chip"
-                    className="w-full md:w-30rem"
+        <div className='p-4'>
+            
+            <div className='py-4'>
+                <Button
+                    icon="pi pi-arrow-left"
+                    label="Volver al Clientes"
+                    className="mb-4"
+                    link
+                    onClick={() => router.visit('/tenants')}
                 />
+                <h2 className="text-xl font-bold mb-2">Tabla de Auditoría para cliente: { tenant.name }</h2>
+                <h3 className="text-l font-bold mb-4">ID Cliente: { tenant.id }</h3>
             </div>
-            <div className="flex flex-col gap-4 mb-4">
-                <label className="font-semibold">Tipo de acción</label>
-                <MultiSelect
-                    value={ selectedTypes }
-                    options={ auditTypeOptions }
-                    onChange={ (e) => setSelectedTypes(e.value) }
-                    optionLabel="label"
-                    placeholder="Selecciona uno o más tipos"
-                    display="chip"
-                    className="w-full md:w-30rem"
-                />
-            </div>
-            <div className="flex flex-col gap-4 mb-4">
-                <label className="font-semibold">Rango de fechas</label>
-                <div className="flex gap-4">
-                    <Calendar
-                        value={ startDate }
-                        onChange={ (e) => setStartDate(e.value) }
-                        placeholder="Desde"
-                        dateFormat="dd/mm/yy"
-                        showIcon
-                    />
-                    <Calendar
-                        value={ endDate }
-                        onChange={ (e) => setEndDate(e.value) }
-                        placeholder="Hasta"
-                        dateFormat="dd/mm/yy"
-                        showIcon
+            
+
+
+
+            {/* Filtros en una sola fila */}
+            <div className="flex flex-wrap gap-6 mb-6">
+
+                {/* Entidad */}
+                <div className="flex flex-col">
+                    <label className="font-semibold">Entidad</label>
+                    <MultiSelect
+                        value={selectedTables}
+                        options={auditTableOptions}
+                        onChange={(e) => setSelectedTables(e.value)}
+                        optionLabel="label"
+                        placeholder="Selecciona entidades"
+                        display="chip"
+                        className="w-full md:w-64"
                     />
                 </div>
-            </div>
-            <div className="flex flex-col gap-2 mb-6">
-                <label className="font-semibold">Buscar por ID de Objeto</label>
-                <div className="flex gap-3 w-full md:w-30rem">
-                    <InputText
-                        value={ objectIdInput }
-                        onChange={ (e) => setObjectIdInput(e.target.value) }
-                        placeholder="Ej: 9c9cf83d-5228-4a6c-8b37-85a550041be6"
-                        className="flex-1"
+
+                {/* Tipo de acción */}
+                <div className="flex flex-col">
+                    <label className="font-semibold">Tipo de acción</label>
+                    <MultiSelect
+                        value={selectedTypes}
+                        options={auditTypeOptions}
+                        onChange={(e) => setSelectedTypes(e.value)}
+                        optionLabel="label"
+                        placeholder="Selecciona tipos"
+                        display="chip"
+                        className="w-full md:w-64"
                     />
+                </div>
+
+                {/* Rango de fechas */}
+                <div className="flex flex-col">
+                    <label className="font-semibold">Rango de fechas</label>
+                    <div className="flex gap-2">
+                        <Calendar
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.value)}
+                            placeholder="Desde"
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                        />
+                        <Calendar
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.value)}
+                            placeholder="Hasta"
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                        />
+                    </div>
+                </div>
+
+                {/* Buscar por ID */}
+                <div className="flex flex-col">
+                    <label className="font-semibold">ID de Objeto</label>
+                    <div className="flex gap-2">
+                        <InputText
+                            value={objectIdInput}
+                            onChange={(e) => setObjectIdInput(e.target.value)}
+                            placeholder="Ej: uuid"
+                            className="w-60"
+                        />
+                        <Button
+                            icon="pi pi-search"
+                            onClick={() => setObjectId(objectIdInput.trim())}
+                        />
+                        <Button
+                            icon="pi pi-times"
+                            severity="secondary"
+                            outlined
+                            onClick={() => {
+                                setObjectId('');
+                                setObjectIdInput('');
+                            }}
+                        />
+                    </div>
+                </div>
+
+                {/* Botón limpiar todos */}
+                <div className="flex items-end">
                     <Button
-                        icon="pi pi-search"
-                        label="Buscar"
-                        onClick={ () => setObjectId(objectIdInput.trim()) }
-                    />
-                    <Button
-                        icon="pi pi-times"
-                        label="Limpiar"
-                        severity="secondary"
+                        label="Limpiar todos"
+                        icon="pi pi-filter-slash"
+                        severity="danger"
                         outlined
-                        onClick={ () => {
+                        onClick={() => {
+                            setSelectedTables([]);
+                            setSelectedTypes([]);
+                            setStartDate(null);
+                            setEndDate(null);
                             setObjectId('');
                             setObjectIdInput('');
-                        } }
+                        }}
                     />
                 </div>
             </div>
+
+
+
+
+
+
 
             <div className="card">
                 <DataTable

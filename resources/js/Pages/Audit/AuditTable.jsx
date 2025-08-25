@@ -123,7 +123,7 @@ export default function AuditTable() {
     }, [ tenantId, selectedTables, selectedTypes, startDate, endDate, objectId, first, rows ]);
 
     return (
-        <div className='p-4'>
+        <div className='py-4 px-12'>
             <div className='py-4'>
                 <Button
                     icon="pi pi-arrow-left"
@@ -230,6 +230,9 @@ export default function AuditTable() {
                 </div>
             </div>
             <div className="card">
+                <p className="text-sm text-gray-600 my-2">
+                    Total de registros: { totalRecords } — Página { totalRecords === 0 ? 0 : Math.floor(first / rows) + 1 } de { Math.ceil(totalRecords / rows) }
+                </p>
                 <DataTable
                     value={ records }
                     lazy
@@ -245,6 +248,7 @@ export default function AuditTable() {
                     tableStyle={ { minWidth: '60rem' } }
                     showGridlines
                     emptyMessage="Sin información de auditorías"
+                    rowsPerPageOptions={ [ 5, 10, 20, 50, 100 ] }
                 >
                     <Column field="id" header="ID" />
                     <Column

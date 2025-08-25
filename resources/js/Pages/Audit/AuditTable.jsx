@@ -83,9 +83,11 @@ export default function AuditTable() {
 
 
     useEffect(() => {
+        setLoading(true);
         if (!tenantId || selectedTables.length == 0) {
             setRecords([]);
             setTotalRecords(0);
+            setLoading(false);
             return;
         };
 

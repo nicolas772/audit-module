@@ -20,6 +20,7 @@ export default function TenantList() {
     const [ error, setError ] = useState(null);
 
     useEffect(() => {
+        setLoading(true)
         axios.get('/api/tenants')
             .then(response => {
                 setTenants(response.data.data);

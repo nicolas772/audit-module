@@ -21,14 +21,6 @@ class SetCurrentTenant
         $tenantIdRoute = $request->route('tenant');
         $tenantIdHeader = $request->header('X-Tenant-Id');
         $tenantId = $tenantIdRoute ?? $tenantIdHeader;
-        
-        Log::info('[SetCurrentTenant] Incoming request', [
-            'path' => $request->path(),
-            //'method' => $request->method(),
-            //'X-Tenant-Id' => $tenantIdHeader,
-            //'tenantIdRoute' => $tenantIdRoute,
-            //'tenantId' => $tenantId
-        ]);
 
         if ($tenantId) {
             if (!Str::isUuid($tenantId)) {
@@ -43,7 +35,6 @@ class SetCurrentTenant
             }
 
             app()->instance('currentTenantId', $tenantId);
-            Log::info('[SetCurrentTenant] Tenant válido', ['tenantId' => $tenantId]);
         } else {
             Log::warning('[SetCurrentTenant] No tenantId en header ni ruta');
             return response()->json(['message' => 'Tenant no especificado'], 400);

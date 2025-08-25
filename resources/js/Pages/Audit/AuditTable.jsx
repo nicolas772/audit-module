@@ -78,7 +78,7 @@ export default function AuditTable() {
     // Paginación
     const [ totalRecords, setTotalRecords ] = useState(0);
     const [ first, setFirst ] = useState(0);
-    const [ rows, setRows ] = useState(4); // valor por defecto
+    const [ rows, setRows ] = useState(10); // valor por defecto
     const [ loading, setLoading ] = useState(false);
 
 

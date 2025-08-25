@@ -14,6 +14,8 @@ class AllInfoSeeder extends Seeder
 {
     public function run(): void
     {
+        $auditRecordsQty = config('app.audit_records_count');
+        
         // Obtener todos los tenants existentes
         $tenants = Tenant::all();
 
@@ -21,32 +23,50 @@ class AllInfoSeeder extends Seeder
             // Setear el current tenant en el contexto de aplicación
             app()->instance('currentTenantId', $tenant->id);
             // Obtener el primer usuario del tenant
-            $user = User::where('tenant_id', $tenant->id)->first();
+            $adminUser = User::where('tenant_id', $tenant->id)->first();
 
             // Loguear al usuario para que Auditing funcione correctamente
-            Auth::login($user);
+            Auth::login($adminUser);
 
-            // Crear usuarios
-            $users = User::factory()->count(2)->create([
+            // Crear Usuarios
+            $users = User::factory()->count($auditRecordsQty)->create([
                 'tenant_id' => $tenant->id,
             ]);
 
-            // Crear cursos
-            $courses = Course::factory()->count(2)->create([
-                'tenant_id' => $tenant->id,
-            ]);
-
+            // Generacion de distintos tipos de auditoría para users_audit
             foreach ($users as $user) {
-                foreach ($courses as $course) {
-                    CourseEnrollment::create([
-                        'id' => Str::uuid(),
-                        'tenant_id' => $tenant->id,
-                        'user_id' => $user->uuid,
-                        'course_id' => $course->id,
-                        'enrolled_at' => now(),
-                        'isCompleted' => fake()->boolean(),
-                    ]);
-                }
+                $user->update(['full_name' => $user->full_name . ' actualizado']);
+                $user->delete();
+            }
+
+            // Crear Cursos
+            $courses = Course::factory()->count($auditRecordsQty)->create([
+                'tenant_id' => $tenant->id,
+            ]);
+
+            // Generacion de distintos tipos de auditoría para courses_audit
+            foreach ($courses as $course) {
+                $course->update(['title' => $course->title . ' actualizado']);
+                $course->delete();
+            }
+
+            // Crear / Update / Delete Inscripciones
+            foreach (range(1, $auditRecordsQty) as $_) {
+                $user = User::factory()->create(['tenant_id' => $tenant->id]);
+                $course = Course::factory()->create(['tenant_id' => $tenant->id]);
+
+                $enrollment = CourseEnrollment::create([
+                    'id' => Str::uuid(),
+                    'tenant_id' => $tenant->id,
+                    'user_id' => $user->uuid,
+                    'course_id' => $course->id,
+                    'enrolled_at' => now(),
+                    'isCompleted' => fake()->boolean(),
+                ]);
+
+                // Generacion de distintos tipos de auditoría para course_enrollments_audit
+                $enrollment->update(['isCompleted' => !$enrollment->isCompleted]);
+                $enrollment->delete();
             }
         }
     }

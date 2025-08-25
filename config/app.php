@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'audit_records_count' => env('AUDIT_RECORDS_COUNT', 10),
+
 ];

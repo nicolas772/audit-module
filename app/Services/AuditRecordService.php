@@ -20,7 +20,7 @@ class AuditRecordService
         $endDate    = $request->input('end_date'); 
         
         // Variables para paginación con LengthAwarePaginator
-        $perPage    = $request->input('per_page', 4);
+        $perPage    = $request->input('per_page', 10);
         $page       = LengthAwarePaginator::resolveCurrentPage();
 
         // Validación para entidades a filtrar

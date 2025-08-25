@@ -9,6 +9,7 @@ import { Calendar } from 'primereact/calendar';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { router } from '@inertiajs/react';
+import { Dialog } from 'primereact/dialog';
 
 // Función que encapsula la lógica para renderizar las columnas de valores antiguos y nuevos
 function renderDiffValues(diffObj) {
@@ -55,6 +56,8 @@ const auditTypeOptions = [
 export default function AuditTable() {
     const { tenant, tenantId } = useTenantStore();
     const [ records, setRecords ] = useState([]);
+    const [ error, setError ] = useState(null);
+    const [ showErrorDialog, setShowErrorDialog ] = useState(false);
 
     // Filtro de Entidad
     const tablesFilter = [ 'users_audit', 'courses_audit', 'course_enrollments_audit' ];
@@ -111,7 +114,9 @@ export default function AuditTable() {
             setRecords(response.data.data);
             setTotalRecords(response.data.total);
         }).catch((error) => {
-            console.error('Error al obtener registros de auditoría:', error);
+            setError('Error al cargar los registros de auditoría');
+            setShowErrorDialog(true);
+            console.error(error);
         }).finally(() => {
             setLoading(false);
         });
@@ -269,6 +274,23 @@ export default function AuditTable() {
                     />
                 </DataTable>
             </div>
+            <Dialog
+                header="Error"
+                visible={ showErrorDialog }
+                style={ { width: '30vw' } }
+                modal
+                onHide={ () => setShowErrorDialog(false) }
+                footer={
+                    <Button
+                        label="Cerrar"
+                        icon="pi pi-times"
+                        onClick={ () => setShowErrorDialog(false) }
+                        autoFocus
+                    />
+                }
+            >
+                <p className="m-0 text-red-500">{ error }</p>
+            </Dialog>
         </div>
     );
 }

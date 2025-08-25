@@ -20,6 +20,9 @@ class AuditTableMapTest extends TestCase
         $this->assertContains('course_enrollments_audit', $tables);
     }
 
+    /**
+     * Test a metodo resolve.
+     */
     public function test_it_resolves_correct_model_class_from_table_name()
     {
         $this->assertEquals(
@@ -38,6 +41,9 @@ class AuditTableMapTest extends TestCase
         );
     }
 
+    /**
+     * Test error a metodo resolve.
+     */
     public function test_it_returns_null_for_unknown_table()
     {
         $this->assertNull(

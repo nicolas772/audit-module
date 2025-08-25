@@ -117,32 +117,25 @@ export default function AuditTable() {
 
     return (
         <div className='p-4'>
-            
             <div className='py-4'>
                 <Button
                     icon="pi pi-arrow-left"
                     label="Volver al Clientes"
                     className="mb-4"
                     link
-                    onClick={() => router.visit('/tenants')}
+                    onClick={ () => router.visit('/tenants') }
                 />
                 <h2 className="text-xl font-bold mb-2">Tabla de Auditoría para cliente: { tenant.name }</h2>
                 <h3 className="text-l font-bold mb-4">ID Cliente: { tenant.id }</h3>
             </div>
-            
-
-
-
-            {/* Filtros en una sola fila */}
             <div className="flex flex-wrap gap-6 mb-6">
-
-                {/* Entidad */}
+                {/* Entidad */ }
                 <div className="flex flex-col">
                     <label className="font-semibold">Entidad</label>
                     <MultiSelect
-                        value={selectedTables}
-                        options={auditTableOptions}
-                        onChange={(e) => setSelectedTables(e.value)}
+                        value={ selectedTables }
+                        options={ auditTableOptions }
+                        onChange={ (e) => setSelectedTables(e.value) }
                         optionLabel="label"
                         placeholder="Selecciona entidades"
                         display="chip"
@@ -150,13 +143,13 @@ export default function AuditTable() {
                     />
                 </div>
 
-                {/* Tipo de acción */}
+                {/* Tipo de acción */ }
                 <div className="flex flex-col">
                     <label className="font-semibold">Tipo de acción</label>
                     <MultiSelect
-                        value={selectedTypes}
-                        options={auditTypeOptions}
-                        onChange={(e) => setSelectedTypes(e.value)}
+                        value={ selectedTypes }
+                        options={ auditTypeOptions }
+                        onChange={ (e) => setSelectedTypes(e.value) }
                         optionLabel="label"
                         placeholder="Selecciona tipos"
                         display="chip"
@@ -164,20 +157,20 @@ export default function AuditTable() {
                     />
                 </div>
 
-                {/* Rango de fechas */}
+                {/* Rango de fechas */ }
                 <div className="flex flex-col">
                     <label className="font-semibold">Rango de fechas</label>
                     <div className="flex gap-2">
                         <Calendar
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.value)}
+                            value={ startDate }
+                            onChange={ (e) => setStartDate(e.value) }
                             placeholder="Desde"
                             dateFormat="dd/mm/yy"
                             showIcon
                         />
                         <Calendar
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.value)}
+                            value={ endDate }
+                            onChange={ (e) => setEndDate(e.value) }
                             placeholder="Hasta"
                             dateFormat="dd/mm/yy"
                             showIcon
@@ -185,57 +178,50 @@ export default function AuditTable() {
                     </div>
                 </div>
 
-                {/* Buscar por ID */}
+                {/* Buscar por ID */ }
                 <div className="flex flex-col">
                     <label className="font-semibold">ID de Objeto</label>
                     <div className="flex gap-2">
                         <InputText
-                            value={objectIdInput}
-                            onChange={(e) => setObjectIdInput(e.target.value)}
+                            value={ objectIdInput }
+                            onChange={ (e) => setObjectIdInput(e.target.value) }
                             placeholder="Ej: uuid"
                             className="w-60"
                         />
                         <Button
                             icon="pi pi-search"
-                            onClick={() => setObjectId(objectIdInput.trim())}
+                            onClick={ () => setObjectId(objectIdInput.trim()) }
                         />
                         <Button
                             icon="pi pi-times"
                             severity="secondary"
                             outlined
-                            onClick={() => {
+                            onClick={ () => {
                                 setObjectId('');
                                 setObjectIdInput('');
-                            }}
+                            } }
                         />
                     </div>
                 </div>
 
-                {/* Botón limpiar todos */}
+                {/* Botón limpiar todos */ }
                 <div className="flex items-end">
                     <Button
                         label="Limpiar todos"
                         icon="pi pi-filter-slash"
                         severity="danger"
                         outlined
-                        onClick={() => {
+                        onClick={ () => {
                             setSelectedTables([]);
                             setSelectedTypes([]);
                             setStartDate(null);
                             setEndDate(null);
                             setObjectId('');
                             setObjectIdInput('');
-                        }}
+                        } }
                     />
                 </div>
             </div>
-
-
-
-
-
-
-
             <div className="card">
                 <DataTable
                     value={ records }
